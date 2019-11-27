@@ -1,5 +1,6 @@
 mod matrix;
 pub mod vector;
+pub mod points;
 
 #[cfg(test)]
 mod tests {

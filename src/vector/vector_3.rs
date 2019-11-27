@@ -59,6 +59,21 @@ impl Vector3 {
     pub fn xyz(&self) -> (f64, f64, f64) {
         (self.x, self.y, self.z)
     }
+
+    pub fn distance(v1: Vector3, v2: Vector3) -> f64 {
+        let x = v1.x - v2.x;
+        let y = v1.y - v2.y;
+        let z = v1.z - v2.z;
+        (x * x + y * y + z * z).sqrt()
+    }
+
+    pub fn distance_squared(v1: Vector3, v2: Vector3) -> f64{
+        let x = v1.x - v2.x;
+        let y = v1.y - v2.y;
+        let z = v1.z - v2.z;
+        x * x + y * y + z * z
+
+    }
 }
 
 impl Vector for Vector3 {
@@ -127,8 +142,6 @@ impl Vector for Vector3 {
         Vector3::new(x, y, z)
     }
 }
-
-
 
 impl Add for Vector3 {
     type Output = Vector3;
