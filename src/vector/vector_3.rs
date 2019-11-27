@@ -1,7 +1,9 @@
 use std::ops::{Add, Sub, Mul};
 use crate::vector::Vector;
 
-
+///
+/// Implementation in 3-space.
+///
 #[derive(Default, Debug, PartialOrd, PartialEq, Copy, Clone)]
 pub struct Vector3 {
     x: f64,
@@ -9,17 +11,93 @@ pub struct Vector3 {
     z: f64,
 }
 
+impl Vector3 {
+    ///
+    /// Create new Vector
+    /// # Example
+    /// ```
+    /// use learn_3D::vector::vector_3::Vector3;
+    /// let vec = Vector3::new(1.0, 2.0, 3.0);
+    /// ```
+    ///
+    pub fn new(x: f64, y: f64, z: f64) -> Self {
+        Self {
+            x,
+            y,
+            z,
+        }
+    }
+
+    ///ToDo[Daniil] Need more clear and effective impl
+    ///
+    /// Return [Vector projection](https://en.wikipedia.org/wiki/Vector_projection "Wiki explanation") on another vector.
+    ///
+    pub fn projection(&self, proj_vector: Self) -> Self {
+        let numer = proj_vector.scalar_product(self.dot_product(proj_vector));
+        let proj_vector_norma = proj_vector.normalize();
+        let denom = proj_vector_norma.dot_product(proj_vector_norma);
+
+        proj_vector_norma.scalar_product(1.0 / denom)
+    }
+
+    /// Perpendicular to vector projection
+    pub fn perp(&self, proj_vector: Self) -> Self {
+        *self - self.projection(proj_vector)
+    }
+
+    fn err(left: Self, right: Self) -> f64 {
+        (left.x - right.x).abs() + (left.y - right.y).abs() + (left.z - right.z).abs()
+    }
+
+    ///Return coordinates of vector as tuple3
+     /// # Example
+    /// ```
+    /// use learn_3D::vector::vector_3::Vector3;
+    /// let vec = Vector3::new(1.0, 2.0, 3.0);
+    /// assert_eq!(vec.xyz(),(1.0, 2.0, 3.0));
+    /// ```
+    pub fn xyz(&self) -> (f64, f64, f64) {
+        (self.x, self.y, self.z)
+    }
+}
+
 impl Vector for Vector3 {
+    /// Return zero vector in 3-dimension space (x=0,y=0,z=0)
+    /// # Example
+    /// ```
+    /// use learn_3D::vector::vector_3::Vector3;
+    /// use learn_3D::vector::Vector;
+    /// let vec = Vector3::zero();
+    /// ```
+    ///
     fn zero() -> Self {
         Self::default()
     }
+
+    /// For vector (x,y,z) return Vector(-x,-y,-z)
     fn reverse(&self) -> Self {
         Self::new(-self.x, -self.y, -self.z)
     }
 
+    ///Return magnitude of 3-space Vector
+    /// magnitude = sqrt(x^2+y^2+z^2)
     fn length(&self) -> f64 {
         self.x.mul_add(self.x, self.y.mul_add(self.y, self.z * self.z)).sqrt()
     }
+
+    ///
+    /// Return product vector on value
+    /// # Example
+    /// ```
+    /// use learn_3D::vector::vector_3::Vector3;
+    /// use learn_3D::vector::Vector;
+    /// let x = 1.0;
+    /// let y = 2.0;
+    /// let z = 3.0;
+    /// let vec = Vector3::new(x, y, z);
+    /// let vec2 = vec.scalar_product(2.0);
+    /// assert_eq!(Vector3::new(x * 2.0, y * 2.0, z * 2.0), vec2);
+    /// ```
 
     fn scalar_product(&self, scalar: f64) -> Self {
         Self {
@@ -50,32 +128,7 @@ impl Vector for Vector3 {
     }
 }
 
-impl Vector3 {
-    pub fn new(x: f64, y: f64, z: f64) -> Self {
-        Self {
-            x,
-            y,
-            z,
-        }
-    }
 
-    ///ToDo[Daniil] Need more clear and effective impl
-    pub fn projection(&self, proj_vector: Self) -> Self {
-        let numer = proj_vector.scalar_product(self.dot_product(proj_vector));
-        let proj_vector_norma = proj_vector.normalize();
-        let denom = proj_vector_norma.dot_product(proj_vector_norma);
-
-        proj_vector_norma.scalar_product(1.0 / denom)
-    }
-
-    pub fn perp(&self, proj_vector: Self) -> Self {
-        *self - self.projection(proj_vector)
-    }
-
-    fn err(left: Self, right: Self) -> f64 {
-        (left.x - right.x).abs() + (left.y - right.y).abs() + (left.z - right.z).abs()
-    }
-}
 
 impl Add for Vector3 {
     type Output = Vector3;
