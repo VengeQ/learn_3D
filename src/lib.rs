@@ -1,5 +1,5 @@
 mod matrix;
-mod vector_3;
+mod vector;
 
 #[cfg(test)]
 mod tests {

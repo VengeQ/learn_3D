@@ -1,4 +1,6 @@
 use std::ops::{Add, Sub, Mul};
+use crate::vector::Vector;
+
 
 #[derive(Default, Debug, PartialOrd, PartialEq, Copy, Clone)]
 pub struct Vector3 {
@@ -7,24 +9,19 @@ pub struct Vector3 {
     z: f64,
 }
 
-impl Vector3 {
-    pub fn zero() -> Self {
+impl Vector for Vector3 {
+    fn zero() -> Self {
         Self::default()
     }
-
-    pub fn reverse(&self) -> Self {
+    fn reverse(&self) -> Self {
         Self::new(-self.x, -self.y, -self.z)
     }
 
-    pub fn new(x: f64, y: f64, z: f64) -> Self {
-        Self {
-            x,
-            y,
-            z,
-        }
+    fn length(&self) -> f64 {
+        self.x.mul_add(self.x, self.y.mul_add(self.y, self.z * self.z)).sqrt()
     }
 
-    pub fn scalar_product(&self, scalar: f64) -> Self {
+    fn scalar_product(&self, scalar: f64) -> Self {
         Self {
             x: self.x * scalar,
             y: self.y * scalar,
@@ -32,11 +29,7 @@ impl Vector3 {
         }
     }
 
-    pub fn length(&self) -> f64 {
-        self.x.mul_add(self.x, self.y.mul_add(self.y, self.z * self.z)).sqrt()
-    }
-
-    pub fn normalize(&self) -> Self {
+    fn normalize(&self) -> Self {
         if self == &Self::zero() {
             Self::zero()
         } else {
@@ -45,8 +38,25 @@ impl Vector3 {
         }
     }
 
-    pub fn dot_product(&self, right: Self) -> f64 {
+    fn dot_product(&self, right: Self) -> f64 {
         self.x * right.x + self.y * right.y + self.z * right.z
+    }
+
+    fn cross_product(&self, right: Self) -> Self {
+        let x = self.y * right.z - right.y * self.z;
+        let y = self.z * right.x - right.z * self.x;
+        let z = self.x * right.y - right.x * self.y;
+        Vector3::new(x, y, z)
+    }
+}
+
+impl Vector3 {
+    pub fn new(x: f64, y: f64, z: f64) -> Self {
+        Self {
+            x,
+            y,
+            z,
+        }
     }
 
     ///ToDo[Daniil] Need more clear and effective impl
@@ -60,13 +70,6 @@ impl Vector3 {
 
     pub fn perp(&self, proj_vector: Self) -> Self {
         *self - self.projection(proj_vector)
-    }
-
-    pub fn cross_product(&self, right: Self) -> Self {
-        let x = self.y * right.z - right.y * self.z;
-        let y = self.z * right.x - right.z * self.x;
-        let z = self.x * right.y - right.x * self.y;
-        Vector3::new(x, y, z)
     }
 
     fn err(left: Self, right: Self) -> f64 {
