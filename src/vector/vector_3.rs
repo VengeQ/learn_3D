@@ -67,12 +67,11 @@ impl Vector3 {
         (x * x + y * y + z * z).sqrt()
     }
 
-    pub fn distance_squared(v1: Vector3, v2: Vector3) -> f64{
+    pub fn distance_squared(v1: Vector3, v2: Vector3) -> f64 {
         let x = v1.x - v2.x;
         let y = v1.y - v2.y;
         let z = v1.z - v2.z;
         x * x + y * y + z * z
-
     }
 }
 
@@ -165,6 +164,12 @@ impl Mul for Vector3 {
 
     fn mul(self, rhs: Self) -> Self::Output {
         self.cross_product(rhs)
+    }
+}
+
+impl From<(f64, f64, f64)> for Vector3 {
+    fn from(v: (f64, f64, f64)) -> Self {
+        Vector3::new(v.0, v.1, v.2)
     }
 }
 
