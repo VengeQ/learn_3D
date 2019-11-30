@@ -7,6 +7,10 @@
       <sourceFolder url="file://$MODULE_DIR$/../learn_3D\examples" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/../learn_3D\tests" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/../learn_3D\benches" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../learn3D\examples" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../learn3D\tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/../learn3D\benches" isTestSource="true" />
+      <excludeFolder url="file://$MODULE_DIR$/target" />
       <excludeFolder url="file://$MODULE_DIR$/../learn_3D\target" />
     </content>
     <orderEntry type="inheritedJdk" />

@@ -1,6 +1,8 @@
 mod matrix;
 pub mod vector;
 pub mod points;
+pub mod line;
+pub mod triangle;
 
 #[cfg(test)]
 mod tests {
