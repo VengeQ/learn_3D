@@ -16,7 +16,7 @@ impl NVector {
     /// Create new n-dimension Vector from Vec<f64>
     /// # Example
     /// ```
-    /// use learn_3D::vector::n_vector::NVector;
+    /// use learn_3D::affine::n_vector::NVector;
     /// let vector_4d = NVector::new(vec![1.0, 3.0, 2.0, 4.0]);
     /// ```
     ///

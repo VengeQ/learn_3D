@@ -3,7 +3,6 @@
 mod matrix;
 pub mod affine;
 pub mod line;
-pub mod triangle;
 pub mod object_3d;
 
 #[cfg(test)]

@@ -16,7 +16,7 @@ impl Vector3 {
     /// Create new Vector
     /// # Example
     /// ```
-    /// use learn_3D::vector::vector_3::Vector3;
+    /// use learn_3D::affine::vector_3::Vector3;
     /// let vec = Vector3::new(1.0, 2.0, 3.0);
     /// ```
     ///
@@ -52,7 +52,7 @@ impl Vector3 {
     ///Return coordinates of vector as tuple3
      /// # Example
     /// ```
-    /// use learn_3D::vector::vector_3::Vector3;
+    /// use learn_3D::affine::vector_3::Vector3;
     /// let vec = Vector3::new(1.0, 2.0, 3.0);
     /// assert_eq!(vec.xyz(),(1.0, 2.0, 3.0));
     /// ```
@@ -78,8 +78,8 @@ impl Vector3 {
     /// Return product vector on value
     /// # Example
     /// ```
-    /// use learn_3D::vector::vector_3::Vector3;
-    /// use learn_3D::vector::Affine;
+    /// use learn_3D::affine::vector_3::Vector3;
+    /// use learn_3D::affine::Affine;
     /// let x = 1.0;
     /// let y = 2.0;
     /// let z = 3.0;
@@ -121,8 +121,8 @@ impl Affine for Vector3 {
     /// Return zero vector in 3-dimension space (x=0,y=0,z=0)
     /// # Example
     /// ```
-    /// use learn_3D::vector::vector_3::Vector3;
-    /// use learn_3D::vector::Affine;
+    /// use learn_3D::affine::vector_3::Vector3;
+    /// use learn_3D::affine::Affine;
     /// let vec = Vector3::zero();
     /// ```
     ///
