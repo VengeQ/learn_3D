@@ -1,7 +1,8 @@
 use crate::object_3d::affine3d::Affine3d;
 
+
 #[derive(Debug, PartialOrd, PartialEq, Copy, Clone)]
-struct Point {
+pub struct Point {
     x: f64,
     y: f64,
     z: f64,
@@ -19,6 +20,8 @@ impl Affine3d for Point {
     fn z(&self) -> f64 {
         self.z
     }
+
+    ///
     fn new(x: f64, y: f64, z: f64) -> Self {
         Point {
             x,
@@ -30,10 +33,30 @@ impl Affine3d for Point {
 
 impl Point {
     #[inline]
+    ///Return squared distance between two points.
+    ///# Example
+    /// ```
+    /// use learn_3D::object_3d::point3d::Point;
+    /// use learn_3D::object_3d::affine3d::Affine3d;
+    /// let p1 = Point::new(2.0,0.0,0.0);
+    /// let p2 = Point::new(4.0,0.0,0.0);
+    /// let expected_squared_distance = (4.0_f64-2.0).powi(2).sqrt();
+    /// assert_eq!(expected_squared_distance,Point::distance(p1,p2))
+    /// ```
     pub fn distance(v1: Point, v2: Point) -> f64 {
         Self::distance_squared(v1, v2).sqrt()
     }
 
+    /// Return squared distance between two points.
+    /// # Example
+    /// ```
+    /// use learn_3D::object_3d::point3d::Point;
+    /// use learn_3D::object_3d::affine3d::Affine3d;
+    /// let p1 = Point::new(2.0,0.0,0.0);
+    /// let p2 = Point::new(4.0,0.0,0.0);
+    /// let expected_squared_distance = (4.0_f64-2.0).powi(2);
+    /// assert_eq!(expected_squared_distance,Point::distance_squared(p1,p2))
+    /// ```
     pub fn distance_squared(v1: Point, v2: Point) -> f64 {
         let x = v1.x - v2.x;
         let y = v1.y - v2.y;
@@ -58,7 +81,6 @@ mod tests {
             assert_eq!(type_of_p1, "learn_3D::object_3d::point3d::Point");
         }
     }
-
 
     #[test]
     fn point_equal_test() {

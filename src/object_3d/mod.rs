@@ -1,3 +1,3 @@
-mod affine3d;
-mod point3d;
-mod vector3d;
+pub mod affine3d;
+pub mod point3d;
+pub mod vector3d;
