@@ -1,5 +1,5 @@
 use std::ops::{Add, Sub, Mul};
-use crate::vector::Vector;
+use crate::affine::Affine;
 
 ///
 /// Implementation in 3-space.
@@ -75,17 +75,21 @@ impl Vector3 {
     }
 }
 
-impl Vector for Vector3 {
+impl Affine for Vector3 {
     /// Return zero vector in 3-dimension space (x=0,y=0,z=0)
     /// # Example
     /// ```
     /// use learn_3D::vector::vector_3::Vector3;
-    /// use learn_3D::vector::Vector;
+    /// use learn_3D::vector::Affine;
     /// let vec = Vector3::zero();
     /// ```
     ///
     fn zero() -> Self {
         Self::default()
+    }
+
+    fn polar(&self) -> (f64, f64, f64) {
+        unimplemented!()
     }
 
     /// For vector (x,y,z) return Vector(-x,-y,-z)
@@ -104,7 +108,7 @@ impl Vector for Vector3 {
     /// # Example
     /// ```
     /// use learn_3D::vector::vector_3::Vector3;
-    /// use learn_3D::vector::Vector;
+    /// use learn_3D::vector::Affine;
     /// let x = 1.0;
     /// let y = 2.0;
     /// let z = 3.0;

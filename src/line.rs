@@ -1,4 +1,4 @@
-use crate::vector::vector_3::Vector3;
+use crate::affine::vector_3::Vector3;
 use std::f64::consts::PI;
 
 #[derive(Default, Debug, PartialOrd, PartialEq, Copy, Clone)]

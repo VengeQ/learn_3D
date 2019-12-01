@@ -1,4 +1,4 @@
-use crate::vector::Vector;
+use crate::affine::Affine;
 
 ///
 /// Represent N-size vector

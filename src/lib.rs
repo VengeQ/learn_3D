@@ -1,8 +1,10 @@
+#![feature(core_intrinsics)]
+
 mod matrix;
-pub mod vector;
-pub mod points;
+pub mod affine;
 pub mod line;
 pub mod triangle;
+pub mod object_3d;
 
 #[cfg(test)]
 mod tests {

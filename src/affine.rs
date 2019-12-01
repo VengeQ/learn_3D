@@ -2,16 +2,21 @@ pub mod vector_3;
 pub mod n_vector;
 
 ///
-/// Represent n-vector
+/// Represent n-vector or n-point
 ///
-pub trait Vector{
+pub trait Affine {
     ///
-    /// Return zero vector for n-dimension space
+    /// Return zero  for n-dimension space
     ///
     fn zero() -> Self;
 
     ///
-    /// Return -vector
+    /// Return polar coordinates(length, phi and theta in degree)
+    ///
+    fn polar(&self) -> (f64,f64,f64);
+
+    ///
+    /// Return negate affine object
     ///
     fn reverse(&self) -> Self;
 
@@ -39,6 +44,5 @@ pub trait Vector{
     /// Return cross product as new vector
     ///
     fn cross_product(&self, right: Self) -> Self;
-
-
 }
+

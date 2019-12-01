@@ -1,4 +1,4 @@
-use crate::vector::vector_3::Vector3;
+use crate::affine::vector_3::Vector3;
 
 type Point = (f64, f64, f64);
 
@@ -28,7 +28,7 @@ impl From<Vector3> for Point {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::vector::Vector;
+    use crate::affine::Affine;
 
     #[test]
     fn new_test() {
