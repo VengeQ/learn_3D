@@ -1,4 +1,4 @@
-use crate::affine::vector_3::Vector3;
+use crate::object_3d::vector3d::Vector3d;
 use crate::object_3d::point3d::Point3d;
 
 
@@ -22,13 +22,13 @@ impl Triangle3d {
         let p0 = self.point0;
         let p1 = self.point1;
         let p2 = self.point2;
-        let v0: Vector3 = crate::object_3d::point3d::Point3d::create_vector(p1, p0);
-        let v1: Vector3 = crate::object_3d::point3d::Point3d::create_vector(p2, p1);
-        let v2: Vector3 = crate::object_3d::point3d::Point3d::create_vector(p0, p2);
+        let v0: Vector3d = crate::object_3d::point3d::Point3d::create_vector(p1, p0);
+        let v1: Vector3d = crate::object_3d::point3d::Point3d::create_vector(p2, p1);
+        let v2: Vector3d = crate::object_3d::point3d::Point3d::create_vector(p0, p2);
         let normal = v0.cross_product(v1).normalize();
-        let w0: Vector3 = crate::object_3d::point3d::Point3d::create_vector(point, p0);
-        let w1: Vector3 = crate::object_3d::point3d::Point3d::create_vector(point, p1);
-        let w2: Vector3 = crate::object_3d::point3d::Point3d::create_vector(point, p2);
+        let w0: Vector3d = crate::object_3d::point3d::Point3d::create_vector(point, p0);
+        let w1: Vector3d = crate::object_3d::point3d::Point3d::create_vector(point, p1);
+        let w2: Vector3d = crate::object_3d::point3d::Point3d::create_vector(point, p2);
 
         let crosses = (
             v0.cross_product(w0).normalize(),
@@ -43,10 +43,9 @@ impl Triangle3d {
         );
 
         //ToDo Need to improve
-        check==(1.0,1.0,1.0)
+        check == (1.0, 1.0, 1.0)
     }
 }
-
 
 
 #[cfg(test)]
@@ -72,13 +71,13 @@ mod tests {
         let t = Triangle3d::new(p0, p1, p2);
         let p = Point3d::new(11.0, 9.0, 4.0);
 
-        let v0: Vector3 = crate::object_3d::point3d::Point3d::create_vector(p1, p0);
-        let v1: Vector3 = crate::object_3d::point3d::Point3d::create_vector(p2, p1);
-        let v2: Vector3 = crate::object_3d::point3d::Point3d::create_vector(p0, p2);
+        let v0: Vector3d = crate::object_3d::point3d::Point3d::create_vector(p1, p0);
+        let v1: Vector3d = crate::object_3d::point3d::Point3d::create_vector(p2, p1);
+        let v2: Vector3d = crate::object_3d::point3d::Point3d::create_vector(p0, p2);
         let normal = v0.cross_product(v1).normalize();
-        let w0: Vector3 = crate::object_3d::point3d::Point3d::create_vector(p, p0);
-        let w1: Vector3 = crate::object_3d::point3d::Point3d::create_vector(p, p1);
-        let w2: Vector3 = crate::object_3d::point3d::Point3d::create_vector(p, p2);
+        let w0: Vector3d = crate::object_3d::point3d::Point3d::create_vector(p, p0);
+        let w1: Vector3d = crate::object_3d::point3d::Point3d::create_vector(p, p1);
+        let w2: Vector3d = crate::object_3d::point3d::Point3d::create_vector(p, p2);
 
         let crosses = (
             v0.cross_product(w0).normalize(),

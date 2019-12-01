@@ -1,5 +1,5 @@
 use crate::object_3d::affine3d::Affine3d;
-use crate::affine::vector_3::Vector3;
+use crate::object_3d::vector3d::Vector3d;
 
 
 #[derive(Debug, PartialOrd, PartialEq, Copy, Clone)]
@@ -73,8 +73,8 @@ impl Point3d {
     }
 
     ///Create vector between to point
-    pub fn create_vector(start:Self, finish:Self) ->Vector3{
-        Vector3::new(finish.x-start.x,finish.y-start.y,finish.z-start.z)
+    pub fn create_vector(start:Self, finish:Self) ->Vector3d{
+        Vector3d::new(finish.x-start.x,finish.y-start.y,finish.z-start.z)
     }
 }
 
