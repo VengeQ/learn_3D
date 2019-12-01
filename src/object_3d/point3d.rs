@@ -25,9 +25,9 @@ impl Affine3d for Point3d {
     /// Create new Point in affine space from cartesian.
     /// # Example
     /// ```
-    /// use learn_3D::object_3d::point3d::Point;
+    /// use learn_3D::object_3d::point3d::Point3d;
     /// use learn_3D::object_3d::affine3d::Affine3d;
-    /// let point = Point::new(1.0,2.0,3.0);
+    /// let point = Point3d::new(1.0,2.0,3.0);
     /// ```
     fn new(x: f64, y: f64, z: f64) -> Self {
         Point3d {
