@@ -30,19 +30,4 @@ impl<T> Affine for T where T: Affine3d + Sized {
         unimplemented!()
     }
 
-    fn scalar_product(&self, scalar: f64) -> Self {
-        unimplemented!()
-    }
-
-    fn normalize(&self) -> Self {
-        unimplemented!()
-    }
-
-    fn dot_product(&self, right: Self) -> f64 {
-        unimplemented!()
-    }
-
-    fn cross_product(&self, right: Self) -> Self {
-        unimplemented!()
-    }
 }

@@ -73,6 +73,48 @@ impl Vector3 {
         let z = v1.z - v2.z;
         x * x + y * y + z * z
     }
+
+    ///
+    /// Return product vector on value
+    /// # Example
+    /// ```
+    /// use learn_3D::vector::vector_3::Vector3;
+    /// use learn_3D::vector::Affine;
+    /// let x = 1.0;
+    /// let y = 2.0;
+    /// let z = 3.0;
+    /// let vec = Vector3::new(x, y, z);
+    /// let vec2 = vec.scalar_product(2.0);
+    /// assert_eq!(Vector3::new(x * 2.0, y * 2.0, z * 2.0), vec2);
+    /// ```
+
+    pub fn scalar_product(&self, scalar: f64) -> Self {
+        Self {
+            x: self.x * scalar,
+            y: self.y * scalar,
+            z: self.z * scalar,
+        }
+    }
+
+    pub fn normalize(&self) -> Self {
+        if self == &Self::zero() {
+            Self::zero()
+        } else {
+            let magnitude = 1_f64 / self.length();
+            self.scalar_product(magnitude)
+        }
+    }
+
+    pub fn dot_product(&self, right: Self) -> f64 {
+        self.x * right.x + self.y * right.y + self.z * right.z
+    }
+
+    pub fn cross_product(&self, right: Self) -> Self {
+        let x = self.y * right.z - right.y * self.z;
+        let y = self.z * right.x - right.z * self.x;
+        let z = self.x * right.y - right.x * self.y;
+        Vector3::new(x, y, z)
+    }
 }
 
 impl Affine for Vector3 {
@@ -101,48 +143,6 @@ impl Affine for Vector3 {
     /// magnitude = sqrt(x^2+y^2+z^2)
     fn length(&self) -> f64 {
         self.x.mul_add(self.x, self.y.mul_add(self.y, self.z * self.z)).sqrt()
-    }
-
-    ///
-    /// Return product vector on value
-    /// # Example
-    /// ```
-    /// use learn_3D::vector::vector_3::Vector3;
-    /// use learn_3D::vector::Affine;
-    /// let x = 1.0;
-    /// let y = 2.0;
-    /// let z = 3.0;
-    /// let vec = Vector3::new(x, y, z);
-    /// let vec2 = vec.scalar_product(2.0);
-    /// assert_eq!(Vector3::new(x * 2.0, y * 2.0, z * 2.0), vec2);
-    /// ```
-
-    fn scalar_product(&self, scalar: f64) -> Self {
-        Self {
-            x: self.x * scalar,
-            y: self.y * scalar,
-            z: self.z * scalar,
-        }
-    }
-
-    fn normalize(&self) -> Self {
-        if self == &Self::zero() {
-            Self::zero()
-        } else {
-            let magnitude = 1_f64 / self.length();
-            self.scalar_product(magnitude)
-        }
-    }
-
-    fn dot_product(&self, right: Self) -> f64 {
-        self.x * right.x + self.y * right.y + self.z * right.z
-    }
-
-    fn cross_product(&self, right: Self) -> Self {
-        let x = self.y * right.z - right.y * self.z;
-        let y = self.z * right.x - right.z * self.x;
-        let z = self.x * right.y - right.x * self.y;
-        Vector3::new(x, y, z)
     }
 }
 
