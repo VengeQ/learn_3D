@@ -1,8 +1,11 @@
-struct Matrix {
+use std::fmt::{Display, Formatter, Error};
+
+pub struct Matrix {
     n: usize,
     m: usize,
     cells: Vec<Vec<f64>>,
 }
+
 
 
 impl Matrix {
@@ -15,24 +18,14 @@ impl Matrix {
         }
     }
 
-    pub fn to_string(&self) -> String {
-        let mut result = "".to_owned();
-        for i in &self.cells {
-            for j in i {
-                result += &j.to_string();
-                result += "  ";
-            }
-            result += "\n";
-        }
-        result
-    }
+
 
     pub fn size(&self) -> [usize; 2] {
         [self.n, self.m]
     }
 
     pub fn from_cells(cells: Vec<Vec<f64>>) -> Self {
-        let (n, m) = if cells.len() == 0 || cells[0].len() == 0 {
+        let (n, m) = if cells.is_empty() || cells[0].is_empty() {
             (0, 0)
         } else {
             (cells.len(), cells[0].len())
@@ -44,7 +37,7 @@ impl Matrix {
         }
     }
 
-    pub fn add(m1: Matrix, m2: Matrix) -> Result<Matrix, String> {
+    pub fn try_add(m1: Matrix, m2: Matrix) -> Result<Matrix, String> {
         if m1.m != m2.m || m1.n != m2.n {
             Result::Err("Can't add".to_owned())
         } else {
@@ -61,7 +54,7 @@ impl Matrix {
         if m1.m == m2.n {
             let mut result = Matrix::new_empty(m1.n, m2.m);
             let n = m1.n;
-            let m = m1.m;
+            let _m = m1.m;
             let k = m2.m;
             for i in 0..n {
                 for j in 0..k {
@@ -79,6 +72,20 @@ impl Matrix {
     }
 }
 
+impl Display for Matrix{
+    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
+        let mut result = "".to_owned();
+        for i in &self.cells {
+            for j in i {
+                result += &j.to_string();
+                result += "  ";
+            }
+            result += "\n";
+        }
+        write!(f,"{}",result)
+
+    }
+}
 
 #[cfg(test)]
 mod test    {
@@ -127,7 +134,7 @@ mod test    {
         let second = vec![4.0, 5.0, 6.0];
         let matrix1 = Matrix::from_cells(vec![first.clone(), second.clone()]);
         let matrix2 = Matrix::from_cells(vec![first.clone(), second.clone()]);
-        println!("{}", Matrix::add(matrix1, matrix2).unwrap().to_string())
+        println!("{}", Matrix::try_add(matrix1, matrix2).unwrap().to_string())
     }
 
     #[test]

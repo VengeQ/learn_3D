@@ -1,5 +1,5 @@
 [package]
-name = "learn_3D"
+name = "astra"
 version = "0.1.0"
 authors = ["Balukin, Daniil <Daniil.Balukin@nexign.com>"]
 edition = "2018"

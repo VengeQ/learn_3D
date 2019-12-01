@@ -13,7 +13,7 @@ impl Vector3d {
     /// Create new Vector
     /// # Example
     /// ```
-    /// use learn_3D::object_3d::vector3d::Vector3d;
+    /// use astra::object_3d::vector3d::Vector3d;
     /// let vec = Vector3d::new(1.0, 2.0, 3.0);
     /// ```
     ///
@@ -25,7 +25,7 @@ impl Vector3d {
         }
     }
 
-    ///ToDo[Daniil] Need more clear and effective impl
+    ///ToDo \[Daniil\]  Need more clear and effective impl
     ///
     /// Return [Vector projection](https://en.wikipedia.org/wiki/Vector_projection "Wiki explanation") on another vector.
     ///
@@ -34,7 +34,7 @@ impl Vector3d {
         let proj_vector_norma = proj_vector.normalize();
         let denom = proj_vector_norma.dot_product(proj_vector_norma);
 
-        proj_vector_norma.scalar_product(1.0 / denom)
+        numer.scalar_product(1.0 / denom)
     }
 
     /// Perpendicular to vector projection
@@ -42,6 +42,7 @@ impl Vector3d {
         *self - self.projection(proj_vector)
     }
 
+    #[allow(dead_code)]
     fn err(left: Self, right: Self) -> f64 {
         (left.x - right.x).abs() + (left.y - right.y).abs() + (left.z - right.z).abs()
     }
@@ -49,7 +50,7 @@ impl Vector3d {
     ///Return coordinates of vector as tuple3
      /// # Example
     /// ```
-    /// use learn_3D::object_3d::vector3d::Vector3d;
+    /// use astra::object_3d::vector3d::Vector3d;
     /// let vec = Vector3d::new(1.0, 2.0, 3.0);
     /// assert_eq!(vec.xyz(),(1.0, 2.0, 3.0));
     /// ```
@@ -75,8 +76,8 @@ impl Vector3d {
     /// Return product vector on value
     /// # Example
     /// ```
-    /// use learn_3D::affine::Affine;
-    /// use learn_3D::object_3d::vector3d::Vector3d;
+    /// use astra::affine::Affine;
+    /// use astra::object_3d::vector3d::Vector3d;
     /// let x = 1.0;
     /// let y = 2.0;
     /// let z = 3.0;
@@ -118,8 +119,8 @@ impl Affine for Vector3d {
     /// Return zero vector in 3-dimension space (x=0,y=0,z=0)
     /// # Example
     /// ```
-    /// use learn_3D::object_3d::vector3d::Vector3d;
-    /// use learn_3D::affine::Affine;
+    /// use astra::object_3d::vector3d::Vector3d;
+    /// use astra::affine::Affine;
     /// let vec = Vector3d::zero();
     /// ```
     ///
@@ -156,7 +157,7 @@ impl Sub for Vector3d {
 
     fn sub(self, rhs: Self) -> Self::Output {
         let tempo = rhs.reverse();
-        self + tempo
+        self.add(tempo)
     }
 }
 
@@ -343,7 +344,7 @@ mod tests {
     fn vector_projection_smoke_test() {
         let v = Vector3d::new(1.0, 2.0, 3.0);
         let w = Vector3d::new(3.0, 4.0, 5.0);
-        let v_proj_w = v.projection(w);
+        let _v_proj_w = v.projection(w);
         //println!("{:?}", v_proj_w);
     }
 
@@ -352,7 +353,10 @@ mod tests {
         let v = Vector3d::new(1.0, 2.0, 3.0);
         let w = Vector3d::new(3.0, 4.0, 5.0);
         let cross_v_w = v * w;
-        //println!("{:?}", cross_v_w);
+
+        let manual_cross =
+            Vector3d::new(v.y * w.z - v.z * w.y, v.z * w.x - w.z * v.x, v.x * w.y - v.y * w.x);
+        assert_eq!(cross_v_w, manual_cross)
     }
 
     #[test]
@@ -418,7 +422,6 @@ mod tests {
             let w = Vector3d::new(x2, y2, z2);
             let u = Vector3d::new(x3, y3, z3);
 
-            let a = rng.gen_range(0, 1000) as f64 / 10.0;
 
             //u × (v × w) = (u · w)v − (u · v)w.
             let left = u * (v * w);

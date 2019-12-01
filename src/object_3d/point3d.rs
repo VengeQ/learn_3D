@@ -25,8 +25,8 @@ impl Affine3d for Point3d {
     /// Create new Point in affine space from cartesian.
     /// # Example
     /// ```
-    /// use learn_3D::object_3d::point3d::Point3d;
-    /// use learn_3D::object_3d::affine3d::Affine3d;
+    /// use astra::object_3d::point3d::Point3d;
+    /// use astra::object_3d::affine3d::Affine3d;
     /// let point = Point3d::new(1.0,2.0,3.0);
     /// ```
     fn new(x: f64, y: f64, z: f64) -> Self {
@@ -36,7 +36,6 @@ impl Affine3d for Point3d {
             z,
         }
     }
-
 }
 
 impl Point3d {
@@ -44,8 +43,8 @@ impl Point3d {
     ///Return squared distance between two points.
     ///# Example
     /// ```
-    /// use learn_3D::object_3d::point3d::Point3d;
-    /// use learn_3D::object_3d::affine3d::Affine3d;
+    /// use astra::object_3d::point3d::Point3d;
+    /// use astra::object_3d::affine3d::Affine3d;
     /// let p1 = Point3d::new(2.0,0.0,0.0);
     /// let p2 = Point3d::new(4.0,0.0,0.0);
     /// let expected_squared_distance = (4.0_f64-2.0).powi(2).sqrt();
@@ -58,8 +57,8 @@ impl Point3d {
     /// Return squared distance between two points.
     /// # Example
     /// ```
-    /// use learn_3D::object_3d::point3d::Point3d;
-    /// use learn_3D::object_3d::affine3d::Affine3d;
+    /// use astra::object_3d::point3d::Point3d;
+    /// use astra::object_3d::affine3d::Affine3d;
     /// let p1 = Point3d::new(2.0,0.0,0.0);
     /// let p2 = Point3d::new(4.0,0.0,0.0);
     /// let expected_squared_distance = (4.0_f64-2.0).powi(2);
@@ -73,8 +72,8 @@ impl Point3d {
     }
 
     ///Create vector between to point
-    pub fn create_vector(start:Self, finish:Self) ->Vector3d{
-        Vector3d::new(finish.x-start.x,finish.y-start.y,finish.z-start.z)
+    pub fn create_vector(start: Self, finish: Self) -> Vector3d {
+        Vector3d::new(finish.x - start.x, finish.y - start.y, finish.z - start.z)
     }
 }
 
@@ -88,11 +87,9 @@ mod tests {
 
     #[test]
     fn point_new_test() {
-        let p1 = Point3d::new(1.0, 3.0, 4.0);
-        unsafe {
-            let type_of_p1 = std::intrinsics::type_name::<Point3d>();
-            assert_eq!(type_of_p1, "learn_3D::object_3d::point3d::Point3d");
-        }
+        let _p1 = Point3d::new(1.0, 3.0, 4.0);
+        let type_of_p1 = std::intrinsics::type_name::<Point3d>();
+        assert_eq!(type_of_p1, "astra::object_3d::point3d::Point3d");
     }
 
     #[test]
@@ -105,7 +102,6 @@ mod tests {
     #[test]
     fn point_polar_simple_test() {
         let p1 = Point3d::new(4.0, 4.0, 4.0);
-        let p1_in_polar = p1.polar();
         assert_eq!(p1.polar().2, 45.0)
     }
 

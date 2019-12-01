@@ -1,9 +1,7 @@
-use crate::affine::Affine;
-
 ///
 /// Represent N-size vector
 ///
-/// Todo[Daniil] Need to difference n-dimension and m-dimension vector
+/// Todo\[Daniil\] Need to difference n-dimension and m-dimension vector
 ///
 #[derive(Default, Debug, PartialOrd, PartialEq, Clone)]
 pub struct NVector {
@@ -16,7 +14,7 @@ impl NVector {
     /// Create new n-dimension Vector from Vec<f64>
     /// # Example
     /// ```
-    /// use learn_3D::affine::n_vector::NVector;
+    /// use astra::affine::n_vector::NVector;
     /// let vector_4d = NVector::new(vec![1.0, 3.0, 2.0, 4.0]);
     /// ```
     ///
@@ -35,6 +33,6 @@ mod tests {
 
     #[test]
     fn n_vector_new_smoke_test() {
-        let vector = NVector::new(vec![1.0, 3.0, 2.0, 4.0, 8.0]);
+        let _ = NVector::new(vec![1.0, 3.0, 2.0, 4.0, 8.0]);
     }
 }

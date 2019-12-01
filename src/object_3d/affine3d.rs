@@ -16,9 +16,9 @@ impl<T> Affine for T where T: Affine3d + Sized {
     ///Represent polar coordinates in degree
     ///# Example
     /// ```
-    /// use learn_3D::object_3d::point3d::Point3d;
-    /// use learn_3D::object_3d::affine3d::Affine3d;
-    /// use learn_3D::affine::Affine;
+    /// use astra::object_3d::point3d::Point3d;
+    /// use astra::object_3d::affine3d::Affine3d;
+    /// use astra::affine::Affine;
     /// let p1 =Point3d::new(1.0,1.0,1.0);
     /// assert_eq!(p1.polar().2, 45.0); //theta = 45 degree for (x,x,x)
     /// let p2 = Point3d::new(1.0,0.0,0.0);

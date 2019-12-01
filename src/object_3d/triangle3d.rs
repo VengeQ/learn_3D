@@ -2,7 +2,7 @@ use crate::object_3d::vector3d::Vector3d;
 use crate::object_3d::point3d::Point3d;
 
 
-struct Triangle3d {
+pub struct Triangle3d {
     point0: Point3d,
     point1: Point3d,
     point2: Point3d,
@@ -51,7 +51,6 @@ impl Triangle3d {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::affine::Affine;
     use crate::object_3d::affine3d::Affine3d;
 
     #[test]
@@ -59,7 +58,7 @@ mod tests {
         let p1 = Point3d::new(1.0, 2.0, 3.0);
         let p2 = Point3d::new(3.0, 4.0, 7.0);
         let p3 = Point3d::new(5.0, 1.0, 9.0);
-        let t = Triangle3d::new(p1, p2, p3);
+        let _t = Triangle3d::new(p1, p2, p3);
     }
 
 
@@ -93,5 +92,7 @@ mod tests {
         println!("{:?}", normal);
         println!("{:?}", crosses);
         println!("{:?}", check);
+
+        assert!(t.check_point(p));
     }
 }
