@@ -9,6 +9,15 @@ pub trait Affine3d {
 }
 
 impl<T> Affine for T where T: Affine3d + Sized {
+
+    /// Return zero vector in 3-dimension space (x=0,y=0,z=0)
+   /// # Example
+   /// ```
+   /// use astra::object_3d::vector3d::Vector3d;
+   /// use astra::affine::Affine;
+   /// let vec = Vector3d::zero();
+   /// ```
+   ///
     fn zero() -> Self {
         Self::new(0.0, 0.0, 0.0)
     }
@@ -34,10 +43,8 @@ impl<T> Affine for T where T: Affine3d + Sized {
     }
 
     fn reverse(&self) -> Self {
-        Self::new(self.x(), self.y(), self.z())
+        Self::new(-self.x(), -self.y(), -self.z())
     }
 
-    fn length(&self) -> f64 {
-        unimplemented!()
-    }
+
 }

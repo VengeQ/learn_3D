@@ -1,11 +1,12 @@
 use std::fmt::{Display, Formatter, Error};
 
+
+#[derive(Debug, PartialOrd, PartialEq, Clone)]
 pub struct Matrix {
     n: usize,
     m: usize,
     cells: Vec<Vec<f64>>,
 }
-
 
 
 impl Matrix {
@@ -17,7 +18,6 @@ impl Matrix {
             cells,
         }
     }
-
 
 
     pub fn size(&self) -> [usize; 2] {
@@ -72,7 +72,7 @@ impl Matrix {
     }
 }
 
-impl Display for Matrix{
+impl Display for Matrix {
     fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
         let mut result = "".to_owned();
         for i in &self.cells {
@@ -82,13 +82,12 @@ impl Display for Matrix{
             }
             result += "\n";
         }
-        write!(f,"{}",result)
-
+        write!(f, "{}", result)
     }
 }
 
 #[cfg(test)]
-mod test    {
+mod test {
     use super::*;
 
     #[test]
@@ -142,5 +141,13 @@ mod test    {
         let matrix1 = Matrix::from_cells(vec![vec![1.0, 2.0, 3.0], vec![4.0, 5.0, 6.0], vec![7.0, 8.0, 9.0], vec![10.0, 11.0, 12.0]]);
         let matrix2 = Matrix::from_cells(vec![vec![1.0, 2.0], vec![3.0, 4.0], vec![5.0, 6.0]]);
         println!("{}", Matrix::product(matrix1, matrix2).unwrap().to_string());
+    }
+
+    #[test]
+    fn product_as_vector_test() {
+        let m1 = Matrix::from_cells(vec![vec![3.0, 5.0, 11.0]]);
+        let m2 = Matrix::from_cells(vec![vec![1.0], vec![2.0], vec![4.0]]);
+        println!("{}", Matrix::product(m1.clone(), m2.clone()).unwrap().to_string());
+        assert_eq!(Matrix::product(m1, m2).unwrap(), Matrix::from_cells(vec![vec![1.0 * 3.0 + 2.0 * 5.0 + 4.0 * 11.0]]));
     }
 }

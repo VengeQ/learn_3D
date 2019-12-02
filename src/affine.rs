@@ -19,9 +19,6 @@ pub trait Affine {
     ///
     fn reverse(&self) -> Self;
 
-    ///
-    /// Return magnitude of vector or normalize distance between point and Origin
-    ///
-    fn length(&self) -> f64;
+
 }
 

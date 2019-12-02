@@ -1,5 +1,6 @@
 use crate::affine::Affine;
 use std::ops::{Add, Sub, Mul};
+use crate::object_3d::affine3d::Affine3d;
 
 #[derive(Default, Debug, PartialOrd, PartialEq, Copy, Clone)]
 pub struct Vector3d {
@@ -9,22 +10,6 @@ pub struct Vector3d {
 }
 
 impl Vector3d {
-    ///
-    /// Create new Vector
-    /// # Example
-    /// ```
-    /// use astra::object_3d::vector3d::Vector3d;
-    /// let vec = Vector3d::new(1.0, 2.0, 3.0);
-    /// ```
-    ///
-    pub fn new(x: f64, y: f64, z: f64) -> Self {
-        Self {
-            x,
-            y,
-            z,
-        }
-    }
-
     ///ToDo \[Daniil\]  Need more clear and effective impl
     ///
     /// Return [Vector projection](https://en.wikipedia.org/wiki/Vector_projection "Wiki explanation") on another vector.
@@ -51,6 +36,7 @@ impl Vector3d {
      /// # Example
     /// ```
     /// use astra::object_3d::vector3d::Vector3d;
+    /// use astra::object_3d::affine3d::Affine3d;
     /// let vec = Vector3d::new(1.0, 2.0, 3.0);
     /// assert_eq!(vec.xyz(),(1.0, 2.0, 3.0));
     /// ```
@@ -76,8 +62,8 @@ impl Vector3d {
     /// Return product vector on value
     /// # Example
     /// ```
-    /// use astra::affine::Affine;
     /// use astra::object_3d::vector3d::Vector3d;
+    /// use astra::object_3d::affine3d::Affine3d;
     /// let x = 1.0;
     /// let y = 2.0;
     /// let z = 3.0;
@@ -103,6 +89,10 @@ impl Vector3d {
         }
     }
 
+    pub fn length(&self) -> f64{
+        (self.x*self.x+self.y*self.y+self.z*self.z).sqrt()
+    }
+
     pub fn dot_product(&self, right: Self) -> f64 {
         self.x * right.x + self.y * right.y + self.z * right.z
     }
@@ -115,32 +105,34 @@ impl Vector3d {
     }
 }
 
-impl Affine for Vector3d {
-    /// Return zero vector in 3-dimension space (x=0,y=0,z=0)
+impl Affine3d for Vector3d {
+    fn x(&self) -> f64 {
+        self.x
+    }
+
+    fn y(&self) -> f64 {
+        self.y
+    }
+
+    fn z(&self) -> f64 {
+        self.z
+    }
+
+    ///
+    /// Create new Vector
     /// # Example
     /// ```
     /// use astra::object_3d::vector3d::Vector3d;
-    /// use astra::affine::Affine;
-    /// let vec = Vector3d::zero();
+    /// use astra::object_3d::affine3d::Affine3d;
+    /// let vec = Vector3d::new(1.0, 2.0, 3.0);
     /// ```
     ///
-    fn zero() -> Self {
-        Self::default()
-    }
-
-    fn polar(&self) -> (f64, f64, f64) {
-        unimplemented!()
-    }
-
-    /// For vector (x,y,z) return Vector(-x,-y,-z)
-    fn reverse(&self) -> Self {
-        Self::new(-self.x, -self.y, -self.z)
-    }
-
-    ///Return magnitude of 3-space Vector
-    /// magnitude = sqrt(x^2+y^2+z^2)
-    fn length(&self) -> f64 {
-        self.x.mul_add(self.x, self.y.mul_add(self.y, self.z * self.z)).sqrt()
+    fn new(x: f64, y: f64, z: f64) -> Self {
+        Self {
+            x,
+            y,
+            z,
+        }
     }
 }
 
