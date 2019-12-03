@@ -1,5 +1,6 @@
 use crate::object_3d::vector3d::Vector3d;
 use crate::object_3d::affine3d::Affine3d;
+use std::ops::{Add, Sub};
 
 ///
 /// Matrix represent as plain array in column major order
@@ -76,6 +77,15 @@ impl Matrix3d {
         result
     }
 
+    ///Reverse sign of all elements of Matrix3d
+    pub fn negate(&self) -> Self {
+        Self::from_array([
+            -self.inner[0], -self.inner[1], -self.inner[2],
+            -self.inner[3], -self.inner[4], -self.inner[5],
+            -self.inner[6], -self.inner[7], -self.inner[8]
+        ])
+    }
+
     pub fn scalar_product(&self, scalar: f64) -> Self {
         let inner = self.inner;
         let na = [
@@ -89,6 +99,28 @@ impl Matrix3d {
     pub fn new_diagonal() -> Self {
         let inner = [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0];
         Matrix3d { inner }.to_owned()
+    }
+}
+
+impl Add for Matrix3d {
+    type Output = Matrix3d;
+
+    fn add(self, rhs: Self) -> Self::Output {
+        let l = self.inner;
+        let r = rhs.inner;
+        Matrix3d::from_array([
+            l[0] + r[0], l[1] + r[1], l[2] + r[2],
+            l[3] + r[3], l[4] + r[4], l[5] + r[5],
+            l[6] + r[6], l[7] + r[7], l[8] + r[8],
+        ])
+    }
+}
+
+impl Sub for Matrix3d {
+    type Output = Self;
+
+    fn sub(self, rhs: Self) -> Self::Output {
+        self + rhs.negate()
     }
 }
 
@@ -253,6 +285,52 @@ mod tests {
             let m2 = Matrix3d::from_array(array_2);
             let scalar_product = m1.scalar_product(scalar);
             assert_eq!(scalar_product, m2)
+        }
+    }
+
+    #[test]
+    fn matrix_add_test() {
+        let mut rng = rand::thread_rng();
+        for _ in 0..100 {
+            let x00 = rng.gen_range(0, 100) as f64;
+            let x01 = rng.gen_range(0, 100) as f64;
+            let x02 = rng.gen_range(0, 100) as f64;
+            let x10 = rng.gen_range(0, 100) as f64;
+            let x11 = rng.gen_range(0, 100) as f64;
+            let x12 = rng.gen_range(0, 100) as f64;
+            let x20 = rng.gen_range(0, 100) as f64;
+            let x21 = rng.gen_range(0, 100) as f64;
+            let x22 = rng.gen_range(0, 100) as f64;
+            let array_1 = [x00, x01, x02, x10, x11, x12, x20, x21, x22];
+            let array_2 = [x00 * 2.0, x01 * 2.0, x02 * 2.0, x10 * 2.0, x11 * 2.0, x12 * 2.0, x20 * 2.0, x21 * 2.0, x22 * 2.0];
+            let m1 = Matrix3d::from_array(array_1);
+            let m2 = Matrix3d::from_array(array_2);
+
+            let sum = m1 + m1;
+            assert_eq!(sum, m2)
+        }
+    }
+
+    #[test]
+    fn matrix_sub_test() {
+        let mut rng = rand::thread_rng();
+        for _ in 0..100 {
+            let x00 = rng.gen_range(0, 100) as f64;
+            let x01 = rng.gen_range(0, 100) as f64;
+            let x02 = rng.gen_range(0, 100) as f64;
+            let x10 = rng.gen_range(0, 100) as f64;
+            let x11 = rng.gen_range(0, 100) as f64;
+            let x12 = rng.gen_range(0, 100) as f64;
+            let x20 = rng.gen_range(0, 100) as f64;
+            let x21 = rng.gen_range(0, 100) as f64;
+            let x22 = rng.gen_range(0, 100) as f64;
+            let array_1 = [x00, x01, x02, x10, x11, x12, x20, x21, x22];
+            let array_2 = [x00 * 2.0, x01 * 2.0, x02 * 2.0, x10 * 2.0, x11 * 2.0, x12 * 2.0, x20 * 2.0, x21 * 2.0, x22 * 2.0];
+            let m1 = Matrix3d::from_array(array_1);
+            let m2 = Matrix3d::from_array(array_2);
+
+            let sub = m2 - m1;
+            assert_eq!(sub, m1)
         }
     }
 }
