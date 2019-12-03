@@ -1,6 +1,8 @@
 use crate::object_3d::vector3d::Vector3d;
 use crate::object_3d::affine3d::Affine3d;
 use std::ops::{Add, Sub};
+use std::fmt::{Display, Formatter, Error};
+use std::cmp::max;
 
 ///
 /// Matrix represent as plain array in column major order
@@ -13,11 +15,38 @@ pub struct Matrix3d {
     inner: [f64; 9]
 }
 
+impl Display for Matrix3d {
+    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
+        write!(f, "{:4}   {:4}    {:4}\n{:4}   {:4}    {:4}\n{:4}   {:4}    {:4}\n",
+               self.inner[0], self.inner[3], self.inner[6],
+               self.inner[1], self.inner[4], self.inner[7],
+               self.inner[2], self.inner[5], self.inner[8])
+    }
+}
+
+
 impl Matrix3d {
     ///Create 3x3 matrix filled zero.
     pub fn new_zero() -> Self {
         let inner = [0.0; 9];
         Matrix3d { inner }.to_owned()
+    }
+
+    /// Create 3x3 matrix from array.
+    /// There is column major order in use
+    /// Follow matrix will be create in example below.
+    /// [ 0  3  6 ]
+    /// [ 1  4  7 ]
+    /// [ 2  5  8 ]
+    ///
+    /// # Example
+    /// ```
+    /// use astra::object_3d::matrix3d::Matrix3d;
+    /// let array = [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
+    /// let matrix = Matrix3d::from_array(array);
+    /// ```
+    pub fn from_array(input: [f64; 9]) -> Self {
+        Self { inner: input }
     }
 
     ///Create 3x3 matrix filled zero from borrowed 9-length array
@@ -26,17 +55,19 @@ impl Matrix3d {
         Self { inner }
     }
 
-    ///Create 3x3 matrix filled zero from array
-    pub fn from_array(input: [f64; 9]) -> Self {
-        Self { inner: input }
-    }
-
     ///Return value of index
     pub fn idx(&self, row: usize, col: usize) -> f64 {
         self.inner[row + 3 * col]
     }
 
     ///Return tuple-3 of rows
+    /// # Example
+    /// ```
+    /// use astra::object_3d::matrix3d::Matrix3d;
+    /// let array = [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
+    /// let matrix = Matrix3d::from_array(array);
+    /// assert_eq!(matrix.columns[1], (3.0, 4.0, 5.0));
+    /// ```
     pub fn columns(&self) -> ([f64; 3], [f64; 3], [f64; 3]) {
         let row0 = [self.inner[0], self.inner[1], self.inner[2]];
         let row1 = [self.inner[3], self.inner[4], self.inner[5]];
@@ -45,6 +76,13 @@ impl Matrix3d {
     }
 
     ///Return tuple-3 of columns
+    /// # Example
+    /// ```
+    /// use astra::object_3d::matrix3d::Matrix3d;
+    /// let array = [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
+    /// let matrix = Matrix3d::from_array(array);
+    /// assert_eq!(matrix.rows[1], (1.0, 4.0, 7.0));
+    /// ```
     pub fn rows(&self) -> ([f64; 3], [f64; 3], [f64; 3]) {
         let row0 = [self.inner[0], self.inner[3], self.inner[6]];
         let row1 = [self.inner[1], self.inner[4], self.inner[7]];
@@ -52,6 +90,7 @@ impl Matrix3d {
         (row0, row1, row2)
     }
 
+    ///Return product matrix on vector
     pub fn vector_product(&self, other: &Vector3d) -> Vector3d {
         let x = self.inner[0] * other.x() + self.inner[3] * other.y() + self.inner[6] * other.z();
         let y = self.inner[1] * other.x() + self.inner[4] * other.y() + self.inner[7] * other.z();
@@ -59,6 +98,7 @@ impl Matrix3d {
         Vector3d::new(x, y, z)
     }
 
+    ///Return product of matrices, equal to Mul implementation
     pub fn matrix_product(&self, other: &Matrix3d) -> Matrix3d {
         let mut result = Self::new_zero();
         let other = other.inner;
@@ -86,6 +126,7 @@ impl Matrix3d {
         ])
     }
 
+    ///Return Product Matrix to scalar.
     pub fn scalar_product(&self, scalar: f64) -> Self {
         let inner = self.inner;
         let na = [
@@ -96,20 +137,69 @@ impl Matrix3d {
         Self::from_array(na)
     }
 
+    /// Return diagonal matrix
+    /// [ 1  0  0 ]
+    /// [ 0  1  0 ]
+    /// [ 0  0  1 ]
     pub fn new_diagonal() -> Self {
         let inner = [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0];
         Matrix3d { inner }.to_owned()
     }
 
-    pub fn linear_eq(&self, v:Vector3d) ->Self{
+    ///ToDo[Daniil]
+    pub fn linear_eq(&self, v: Vector3d) -> Result<(f64, f64, f64), String> {
+        let mut matrix = self.to_owned();
+        let mut vector = [v.x(), v.y(), v.z()];
+        for p in 0..2 {
+            if matrix.idx(0, p) < matrix.idx(2, p) {
+                matrix = matrix.swap_rows(0, 2);
+            }
+            if matrix.idx(0, p) < matrix.idx(1, p) {
+                matrix = matrix.swap_rows(0, 1);
+            }
+            if matrix.idx(0, p) == 0.0 {
+                return Err("To zero".to_owned());
+            }
+            println!("swap:\n{}", (matrix));
+            let scale = matrix.inner[p+p*3];
+            println!("scale:{}", scale);
+            matrix.inner[3 + p] = matrix.inner[3 + p] / scale;
+            matrix.inner[6 + p] = matrix.inner[6 + p] / scale;
+            vector[p] = vector[p] / matrix.inner[0 + p];
+            matrix.inner[p+p*3] = 1.0;
 
+            println!("scale_first:\n{}", (matrix));
+            for r in p + 1..=2 {
+                let scale_p = -matrix.inner[r+p*3]/matrix.inner[p+p*3];
+                println!("scale:\n {}", (scale_p));
+                let tempo = [matrix.inner[p ] * scale_p, matrix.inner[p +3 ] * scale_p, matrix.inner[p +6] * scale_p];
+                println!("tempo:\n {:?}", (tempo));
+                matrix.inner[r] = matrix.inner[r] + tempo[0];
+                matrix.inner[r+3] = matrix.inner[r+3] + tempo[1];
+                matrix.inner[r+6] = matrix.inner[r+6] + tempo[2];
+                vector[r] = vector[r] - matrix.inner[0 + r];
+                println!("scale after:\n{}", (matrix));
+            }
+        }
+        println!("Result:\n{}", (matrix));
+
+        Ok((0.0, 0.0, 0.0))
     }
 
-    pub fn swap_row(&self,i:usize,j:usize) -> Self{
+    pub fn swap_rows(&self, i: usize, j: usize) -> Self {
         let mut matrix = self.to_owned();
-        std::mem::swap(matrix.inner[i],self.inner[j]);
-        matrix.inner[i]=self.inner[j];
+        matrix.inner.swap(i, j);
+        matrix.inner.swap(i + 3, j + 3);
+        matrix.inner.swap(i + 6, j + 6);
+        matrix
+    }
 
+    pub fn swap_cols(&self, i: usize, j: usize) -> Self {
+        let mut matrix = self.to_owned();
+        matrix.inner.swap(i * 3, j * 3);
+        matrix.inner.swap(i * 3 + 1, j * 3 + 1);
+        matrix.inner.swap(i * 3 + 1, j * 3 + 1);
+        matrix
     }
 }
 
@@ -182,6 +272,7 @@ mod tests {
     fn from_array_test() {
         let i = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0];
         let m = Matrix3d::from_array(i);
+        println!("{}", m);
         assert_eq!(m.rows().0, [1.0, 4.0, 7.0]);
     }
 
@@ -346,7 +437,33 @@ mod tests {
     }
 
     #[test]
-    fn linear_eq_test(){
+    fn linear_eq_test() {
+        let m1 = Matrix3d::from_array([1.0, 2.0, 3.0, -3.0, -1.0, 6.0, 1.0, 2.0, 9.0]);
+        let v = Vector3d::new(5.0, 5.0, 3.0);
+        m1.linear_eq(v);
+    }
 
+    #[test]
+    fn swap_rows_test() {
+        let mut rng = rand::thread_rng();
+        for _ in 0..1 {
+            let x00 = rng.gen_range(0, 100) as f64;
+            let x01 = rng.gen_range(0, 100) as f64;
+            let x02 = rng.gen_range(0, 100) as f64;
+            let x10 = rng.gen_range(0, 100) as f64;
+            let x11 = rng.gen_range(0, 100) as f64;
+            let x12 = rng.gen_range(0, 100) as f64;
+            let x20 = rng.gen_range(0, 100) as f64;
+            let x21 = rng.gen_range(0, 100) as f64;
+            let x22 = rng.gen_range(0, 100) as f64;
+            let array_1 = [x00, x01, x02, x10, x11, x12, x20, x21, x22];
+            let m1 = Matrix3d::from_array(array_1);
+            let m2 = m1.swap_rows(0, 1);
+            assert_ne!(m1, m2);
+            println!("{}", m1);
+            let m3 = Matrix3d::from_array([x01, x00, x02, x11, x10, x12, x21, x20, x22]);
+            println!("{}", m3);
+            assert_eq!(m3, m2);
+        }
     }
 }
