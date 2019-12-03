@@ -100,6 +100,17 @@ impl Matrix3d {
         let inner = [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0];
         Matrix3d { inner }.to_owned()
     }
+
+    pub fn linear_eq(&self, v:Vector3d) ->Self{
+
+    }
+
+    pub fn swap_row(&self,i:usize,j:usize) -> Self{
+        let mut matrix = self.to_owned();
+        std::mem::swap(matrix.inner[i],self.inner[j]);
+        matrix.inner[i]=self.inner[j];
+
+    }
 }
 
 impl Add for Matrix3d {
@@ -332,5 +343,10 @@ mod tests {
             let sub = m2 - m1;
             assert_eq!(sub, m1)
         }
+    }
+
+    #[test]
+    fn linear_eq_test(){
+
     }
 }
