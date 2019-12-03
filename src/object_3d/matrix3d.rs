@@ -76,6 +76,16 @@ impl Matrix3d {
         result
     }
 
+    pub fn scalar_product(&self, scalar: f64) -> Self {
+        let inner = self.inner;
+        let na = [
+            inner[0] * scalar, inner[1] * scalar, inner[2] * scalar,
+            inner[3] * scalar, inner[4] * scalar, inner[5] * scalar,
+            inner[6] * scalar, inner[7] * scalar, inner[8] * scalar
+        ];
+        Self::from_array(na)
+    }
+
     pub fn new_diagonal() -> Self {
         let inner = [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0];
         Matrix3d { inner }.to_owned()
@@ -97,7 +107,7 @@ mod tests {
     #[test]
     fn matrix3d_new_diagonal_test() {
         let m = Matrix3d::new_zero();
-        m.inner.iter().for_each(|x| assert !(*x >= 0.0 && *x <= 1.0))
+        m.inner.iter().for_each(|x| assert!(*x >= 0.0 && *x <= 1.0))
     }
 
     #[test]
@@ -168,19 +178,81 @@ mod tests {
                 v0 * x02 + v1 * x12 + v2 * x22);
             assert_eq!(manual_product, mv_product);
         }
-        let i = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0];
-        let matrix = Matrix3d::from_array(i);
-        let vector = Vector3d::new(2.0, 3.0, 6.0);
-        let mv_product = matrix.vector_product(&vector);
-        println!("{:?}", mv_product);
     }
 
     #[test]
     fn matrix_product_test() {
-        let i = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0];
+        let mut rng = rand::thread_rng();
+        for _ in 0..100 {
+            let x00 = rng.gen_range(0, 100) as f64;
+            let x01 = rng.gen_range(0, 100) as f64;
+            let x02 = rng.gen_range(0, 100) as f64;
+            let x10 = rng.gen_range(0, 100) as f64;
+            let x11 = rng.gen_range(0, 100) as f64;
+            let x12 = rng.gen_range(0, 100) as f64;
+            let x20 = rng.gen_range(0, 100) as f64;
+            let x21 = rng.gen_range(0, 100) as f64;
+            let x22 = rng.gen_range(0, 100) as f64;
+
+            let y00 = rng.gen_range(0, 100) as f64;
+            let y01 = rng.gen_range(0, 100) as f64;
+            let y02 = rng.gen_range(0, 100) as f64;
+            let y10 = rng.gen_range(0, 100) as f64;
+            let y11 = rng.gen_range(0, 100) as f64;
+            let y12 = rng.gen_range(0, 100) as f64;
+            let y20 = rng.gen_range(0, 100) as f64;
+            let y21 = rng.gen_range(0, 100) as f64;
+            let y22 = rng.gen_range(0, 100) as f64;
+
+            let mut i = [x00, x01, x02, x10, x11, x12, x20, x21, x22];
+            let m1 = Matrix3d::from_array(i);
+            i = [y00, y01, y02, y10, y11, y12, y20, y21, y22];
+            let m2 = Matrix3d::from_array(i);
+            let mv_product = m1.matrix_product(&m2);
+
+            let mut manual_product = Matrix3d::new_zero();
+            manual_product.inner[0] = x00 * y00 + x10 * y01 + x20 * y02;
+            manual_product.inner[1] = x01 * y00 + x11 * y01 + x21 * y02;
+            manual_product.inner[2] = x02 * y00 + x12 * y01 + x22 * y02;
+
+            manual_product.inner[3] = x00 * y10 + x10 * y11 + x20 * y12;
+            manual_product.inner[4] = x01 * y10 + x11 * y11 + x21 * y12;
+            manual_product.inner[5] = x02 * y10 + x12 * y11 + x22 * y12;
+
+            manual_product.inner[6] = x00 * y20 + x10 * y21 + x20 * y22;
+            manual_product.inner[7] = x01 * y20 + x11 * y21 + x21 * y22;
+            manual_product.inner[8] = x02 * y20 + x12 * y21 + x22 * y22;
+
+            assert_eq!(manual_product, mv_product)
+        }
+
+
+        let i = [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
         let m1 = Matrix3d::from_array(i);
-        let m2 = Matrix3d::from_array(i);
-        let mv_product = m1.matrix_product(&m2);
-        println!("{:?}", mv_product);
+        println!("{:?}", m1.idx(2, 0));
+    }
+
+    #[test]
+    fn matrix_scalar_product_test() {
+        let mut rng = rand::thread_rng();
+        for _ in 0..100 {
+            let x00 = rng.gen_range(0, 100) as f64;
+            let x01 = rng.gen_range(0, 100) as f64;
+            let x02 = rng.gen_range(0, 100) as f64;
+            let x10 = rng.gen_range(0, 100) as f64;
+            let x11 = rng.gen_range(0, 100) as f64;
+            let x12 = rng.gen_range(0, 100) as f64;
+            let x20 = rng.gen_range(0, 100) as f64;
+            let x21 = rng.gen_range(0, 100) as f64;
+            let x22 = rng.gen_range(0, 100) as f64;
+
+            let scalar = rng.gen_range(0, 100) as f64;
+            let array_1 = [x00, x01, x02, x10, x11, x12, x20, x21, x22];
+            let array_2 = [x00 * scalar, x01 * scalar, x02 * scalar, x10 * scalar, x11 * scalar, x12 * scalar, x20 * scalar, x21 * scalar, x22 * scalar];
+            let m1 = Matrix3d::from_array(array_1);
+            let m2 = Matrix3d::from_array(array_2);
+            let scalar_product = m1.scalar_product(scalar);
+            assert_eq!(scalar_product, m2)
+        }
     }
 }
