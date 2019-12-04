@@ -343,6 +343,8 @@ mod tests {
     use super::*;
     use rand::Rng;
 
+    const DIFF_ERR: f64 = 10e-7;
+
     #[test]
     fn matrix3d_new_zero_test() {
         let m = Matrix3d::new_zero();
@@ -619,7 +621,7 @@ mod tests {
         let inverse = matrix.inverse().unwrap();
 
         let expected = Matrix3d::from_cols([-1.0, -7.0, 20.0], [18.0, 14.0, -52.0], [-13.0, -7.0, 36.0])
-            .scalar_product(1.0/matrix.det());
+            .scalar_product(1.0 / matrix.det());
 
         assert_eq!(inverse, expected);
     }
@@ -631,5 +633,39 @@ mod tests {
     }
 
     #[test]
-    fn determinant_rules_test() {}
+    fn determinant_rules_test() {
+        let mut rng = rand::thread_rng();
+        for _ in 0..100 {
+            let x00 = rng.gen_range(0, 100) as f64;
+            let x01 = rng.gen_range(0, 100) as f64;
+            let x02 = rng.gen_range(0, 100) as f64;
+            let x10 = rng.gen_range(0, 100) as f64;
+            let x11 = rng.gen_range(0, 100) as f64;
+            let x12 = rng.gen_range(0, 100) as f64;
+            let x20 = rng.gen_range(0, 100) as f64;
+            let x21 = rng.gen_range(0, 100) as f64;
+            let x22 = rng.gen_range(0, 100) as f64;
+
+            let y00 = rng.gen_range(0, 100) as f64;
+            let y01 = rng.gen_range(0, 100) as f64;
+            let y02 = rng.gen_range(0, 100) as f64;
+            let y10 = rng.gen_range(0, 100) as f64;
+            let y11 = rng.gen_range(0, 100) as f64;
+            let y12 = rng.gen_range(0, 100) as f64;
+            let y20 = rng.gen_range(0, 100) as f64;
+            let y21 = rng.gen_range(0, 100) as f64;
+            let y22 = rng.gen_range(0, 100) as f64;
+
+            let m1 = Matrix3d::from_array([x00, x01, x02, x10, x11, x12, x20, x21, x22]);
+            let m2 = Matrix3d::from_array([y00, y01, y02, y10, y11, y12, y20, y21, y22]);
+
+
+            assert_eq!(m1.det() * m2.det(), (m1.matrix_product(&m2)).det());
+
+            if m1.det() != 0.0 {
+                let m1_inverse = m1.inverse();
+                assert!(m1.det() - m1_inverse.unwrap().det().powi(-1)<=DIFF_ERR) ;
+            }
+        }
+    }
 }
