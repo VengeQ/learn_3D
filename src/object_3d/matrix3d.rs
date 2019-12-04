@@ -5,8 +5,11 @@ use std::fmt::{Display, Formatter, Error};
 
 ///
 /// Matrix represent as plain array in column major order
+///
 /// [ 0  3  6 ]
+///
 /// [ 1  4  7 ]
+///
 /// [ 2  5  8 ]
 ///
 #[derive(Debug, PartialOrd, PartialEq, Copy, Clone)]
@@ -34,8 +37,11 @@ impl Matrix3d {
     /// Create 3x3 matrix from array.
     /// There is column major order in use
     /// Follow matrix will be create in example below.
+    ///
     /// [ 0  3  6 ]
+    ///
     /// [ 1  4  7 ]
+    ///
     /// [ 2  5  8 ]
     ///
     /// # Example
@@ -52,6 +58,30 @@ impl Matrix3d {
     pub fn from_borrowed(input: &[f64; 9]) -> Self {
         let inner: [f64; 9] = [input[0], input[1], input[2], input[3], input[4], input[5], input[6], input[7], input[8]];
         Self { inner }
+    }
+
+    ///Create matrix from columns
+    /// Example below create matrix:
+    ///
+    /// [ 3.0  7.0  -2.5 ]
+    ///
+    /// [ 1.5  2.5   3.0 ]
+    ///
+    /// [ 4.0  4.5  -1.0 ]
+    /// # Example
+    /// ```
+    /// use astra::object_3d::matrix3d::Matrix3d;
+    /// let col0 = [3.0, 1.5, 4.0];
+    /// let col1 = [7.0, 2.5, 4.5];
+    /// let col2 = [-2.5, 3.0, -1.0];
+    /// let matrix = Matrix3d::from_cols(col0, col1, col2);
+    /// ```
+    pub fn from_cols(column0: [f64; 3], column1: [f64; 3], column2: [f64; 3]) -> Self {
+        Matrix3d::from_array([
+            column0[0], column0[1], column0[2],
+            column1[0], column1[1], column1[2],
+            column2[0], column2[1], column2[2]
+        ])
     }
 
     ///Return value of index
@@ -134,7 +164,6 @@ impl Matrix3d {
     /// assert_eq!(matrix.rows(), transposed.columns());
     /// assert_eq!(matrix.columns(),transposed.rows());
     /// ```
-    ///
     pub fn transpose(&self) -> Self {
         Self::from_array([
             self.inner[0], self.inner[3], self.inner[6],
@@ -155,15 +184,18 @@ impl Matrix3d {
     }
 
     /// Return diagonal matrix
+    ///
     /// [ 1  0  0 ]
+    ///
     /// [ 0  1  0 ]
+    ///
     /// [ 0  0  1 ]
     pub fn new_diagonal() -> Self {
         let inner = [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0];
         Matrix3d { inner }.to_owned()
     }
 
-    ///ToDo[Daniil]
+    ///ToDo/[Daniil/]
     pub fn linear_eq(&self, v: Vector3d) -> Result<(f64, f64, f64), String> {
         let mut matrix = self.to_owned();
         let mut vector = [v.x(), v.y(), v.z()];
@@ -211,12 +243,75 @@ impl Matrix3d {
         matrix
     }
 
+    ///Return new matrix with swapped columns
     pub fn swap_cols(&self, i: usize, j: usize) -> Self {
         let mut matrix = self.to_owned();
         matrix.inner.swap(i * 3, j * 3);
         matrix.inner.swap(i * 3 + 1, j * 3 + 1);
         matrix.inner.swap(i * 3 + 1, j * 3 + 1);
         matrix
+    }
+
+    /// Return determinant of matrix
+    /// # Example
+    /// ```
+    /// use astra::object_3d::matrix3d::Matrix3d;
+    /// let m1 = Matrix3d::from_array([2.0,4.0,7.0,3.0,4.0,9.0,11.0,5.0,6.0]);
+    /// assert_eq!(m1.det(),79.0);
+    /// ```
+    pub fn det(&self) -> f64 {
+        let inner = &self.inner;
+        inner[0] * Self::det2([inner[4], inner[5], inner[7], inner[8]])
+            - inner[3] * Self::det2([inner[1], inner[2], inner[7], inner[8]])
+            + inner[6] * Self::det2([inner[1], inner[2], inner[4], inner[5]])
+    }
+
+    fn det2(input: [f64; 4]) -> f64 {
+        input[0] * input[3] - input[2] * input[1]
+    }
+    /// Return [Adjunct matrix](https://en.wikipedia.org/wiki/Adjugate_matrix)
+    /// Determinant of matrix must be nonzero
+    /// Example below return matrix
+    ///
+    /// [-11   6  -1]
+    ///
+    /// [-2  -12   8]
+    ///
+    /// [10    6  -4]
+    /// # Example
+    /// ```
+    ///  use astra::object_3d::matrix3d::Matrix3d;
+    ///  let matrix = Matrix3d::from_cols([0.0,1.0,2.0],[4.0,3.0,5.0],[6.0,7.0,8.0]);
+    ///  let adj = matrix.adj_matrix();
+    /// ```
+    pub fn adj_matrix(&self) -> Self {
+        let t = self.to_owned();
+        let z = t.inner;
+        let m0 = Self::det2([z[4], z[5], z[7], z[8]]);
+        let m1 = -Self::det2([z[3], z[5], z[6], z[8]]);
+        let m2 = Self::det2([z[3], z[4], z[6], z[7]]);
+
+        let m3 = -Self::det2([z[1], z[2], z[7], z[8]]);
+        let m4 = Self::det2([z[0], z[2], z[6], z[8]]);
+        let m5 = -Self::det2([z[0], z[1], z[6], z[7]]);
+
+        let m6 = Self::det2([z[1], z[2], z[4], z[5]]);
+        let m7 = -Self::det2([z[0], z[2], z[3], z[5]]);
+        let m8 = Self::det2([z[0], z[1], z[3], z[4]]);
+        Self::from_array([m0, m1, m2, m3, m4, m5, m6, m7, m8])
+    }
+
+    ///Return inverse matrix as option.
+    /// If determinant equal to zero then return None.
+    pub fn inverse(&self) -> Option<Self> {
+        let det = self.det();
+        println!("{}", det);
+        if det == 0.0 {
+            None
+        } else {
+            println!("{}", self.adj_matrix());
+            Some(self.adj_matrix().transpose().scalar_product(1.0 / det))
+        }
     }
 }
 
@@ -489,6 +584,52 @@ mod tests {
         let matrix1 = Matrix3d::from_array([0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]);
         let matrix2 = Matrix3d::from_array([0.0, 3.0, 6.0, 1.0, 4.0, 7.0, 2.0, 5.0, 8.0]);
         assert_eq!(matrix1.transpose(), matrix2);
-        assert_eq!(matrix1.rows(),matrix2.columns());
+        assert_eq!(matrix1.rows(), matrix2.columns());
     }
+
+    #[test]
+    fn determinant_test() {
+        let m1 = Matrix3d::from_array([2.0, 4.0, 7.0, 3.0, 4.0, 9.0, 11.0, 5.0, 6.0]);
+        assert_eq!(m1.det(), 79.0);
+    }
+
+    #[test]
+    fn from_cols_test() {
+        let col0 = [3.0, 1.5, 4.0];
+        let col1 = [7.0, 2.5, 4.5];
+        let col2 = [-2.5, 3.0, -1.0];
+
+        let matrix1 = Matrix3d::from_cols(col0, col1, col2);
+        let matrix2 = Matrix3d::from_array([3.0, 1.5, 4.0, 7.0, 2.5, 4.5, -2.5, 3.0, -1.0]);
+        assert_eq!(matrix1, matrix2);
+    }
+
+    #[test]
+    fn adj_matrix_test() {
+        let matrix = Matrix3d::from_cols([0.0, 1.0, 2.0], [4.0, 3.0, 5.0], [6.0, 7.0, 8.0]);
+        let adj = matrix.adj_matrix();
+        let expected = Matrix3d::from_cols([-11.0, -2.0, 10.0], [6.0, -12.0, 6.0], [-1.0, 8.0, -4.0]);
+        println!("{}", expected);
+        assert_eq!(adj, expected)
+    }
+
+    #[test]
+    fn inverse_test() {
+        let matrix = Matrix3d::from_cols([5.0, 4.0, 3.0], [1.0, 8.0, 11.0], [2.0, 3.0, 4.0]);
+        let inverse = matrix.inverse().unwrap();
+
+        let expected = Matrix3d::from_cols([-1.0, -7.0, 20.0], [18.0, 14.0, -52.0], [-13.0, -7.0, 36.0])
+            .scalar_product(1.0/matrix.det());
+
+        assert_eq!(inverse, expected);
+    }
+
+    #[test]
+    fn inverse_zero_det_test() {
+        let matrix = Matrix3d::from_cols([0.0, 1.0, 2.0], [3.0, 4.0, 5.0], [6.0, 7.0, 8.0]);
+        assert!(matrix.inverse().is_none())
+    }
+
+    #[test]
+    fn determinant_rules_test() {}
 }
