@@ -2,7 +2,6 @@ use crate::object_3d::vector3d::Vector3d;
 use crate::object_3d::affine3d::Affine3d;
 use std::ops::{Add, Sub};
 use std::fmt::{Display, Formatter, Error};
-use std::cmp::max;
 
 ///
 /// Matrix represent as plain array in column major order
@@ -66,7 +65,7 @@ impl Matrix3d {
     /// use astra::object_3d::matrix3d::Matrix3d;
     /// let array = [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
     /// let matrix = Matrix3d::from_array(array);
-    /// assert_eq!(matrix.columns[1], (3.0, 4.0, 5.0));
+    /// assert_eq!(matrix.columns().1, [3.0, 4.0, 5.0]);
     /// ```
     pub fn columns(&self) -> ([f64; 3], [f64; 3], [f64; 3]) {
         let row0 = [self.inner[0], self.inner[1], self.inner[2]];
@@ -81,7 +80,7 @@ impl Matrix3d {
     /// use astra::object_3d::matrix3d::Matrix3d;
     /// let array = [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
     /// let matrix = Matrix3d::from_array(array);
-    /// assert_eq!(matrix.rows[1], (1.0, 4.0, 7.0));
+    /// assert_eq!(matrix.rows().1, [1.0, 4.0, 7.0]);
     /// ```
     pub fn rows(&self) -> ([f64; 3], [f64; 3], [f64; 3]) {
         let row0 = [self.inner[0], self.inner[3], self.inner[6]];
@@ -126,6 +125,24 @@ impl Matrix3d {
         ])
     }
 
+    ///Return transposed matrix
+    /// # Example
+    /// ```
+    /// use astra::object_3d::matrix3d::Matrix3d;
+    /// let matrix = Matrix3d::from_array([0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]);
+    /// let transposed = matrix.transpose();
+    /// assert_eq!(matrix.rows(), transposed.columns());
+    /// assert_eq!(matrix.columns(),transposed.rows());
+    /// ```
+    ///
+    pub fn transpose(&self) -> Self {
+        Self::from_array([
+            self.inner[0], self.inner[3], self.inner[6],
+            self.inner[1], self.inner[4], self.inner[7],
+            self.inner[2], self.inner[5], self.inner[8]
+        ])
+    }
+
     ///Return Product Matrix to scalar.
     pub fn scalar_product(&self, scalar: f64) -> Self {
         let inner = self.inner;
@@ -161,22 +178,22 @@ impl Matrix3d {
                 return Err("To zero".to_owned());
             }
             println!("swap:\n{}", (matrix));
-            let scale = matrix.inner[p+p*3];
+            let scale = matrix.inner[p + p * 3];
             println!("scale:{}", scale);
             matrix.inner[3 + p] = matrix.inner[3 + p] / scale;
             matrix.inner[6 + p] = matrix.inner[6 + p] / scale;
             vector[p] = vector[p] / matrix.inner[0 + p];
-            matrix.inner[p+p*3] = 1.0;
+            matrix.inner[p + p * 3] = 1.0;
 
             println!("scale_first:\n{}", (matrix));
             for r in p + 1..=2 {
-                let scale_p = -matrix.inner[r+p*3]/matrix.inner[p+p*3];
+                let scale_p = -matrix.inner[r + p * 3] / matrix.inner[p + p * 3];
                 println!("scale:\n {}", (scale_p));
-                let tempo = [matrix.inner[p ] * scale_p, matrix.inner[p +3 ] * scale_p, matrix.inner[p +6] * scale_p];
+                let tempo = [matrix.inner[p] * scale_p, matrix.inner[p + 3] * scale_p, matrix.inner[p + 6] * scale_p];
                 println!("tempo:\n {:?}", (tempo));
                 matrix.inner[r] = matrix.inner[r] + tempo[0];
-                matrix.inner[r+3] = matrix.inner[r+3] + tempo[1];
-                matrix.inner[r+6] = matrix.inner[r+6] + tempo[2];
+                matrix.inner[r + 3] = matrix.inner[r + 3] + tempo[1];
+                matrix.inner[r + 6] = matrix.inner[r + 6] + tempo[2];
                 vector[r] = vector[r] - matrix.inner[0 + r];
                 println!("scale after:\n{}", (matrix));
             }
@@ -440,7 +457,7 @@ mod tests {
     fn linear_eq_test() {
         let m1 = Matrix3d::from_array([1.0, 2.0, 3.0, -3.0, -1.0, 6.0, 1.0, 2.0, 9.0]);
         let v = Vector3d::new(5.0, 5.0, 3.0);
-        m1.linear_eq(v);
+        m1.linear_eq(v).unwrap();
     }
 
     #[test]
@@ -465,5 +482,13 @@ mod tests {
             println!("{}", m3);
             assert_eq!(m3, m2);
         }
+    }
+
+    #[test]
+    fn transpose_test() {
+        let matrix1 = Matrix3d::from_array([0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0]);
+        let matrix2 = Matrix3d::from_array([0.0, 3.0, 6.0, 1.0, 4.0, 7.0, 2.0, 5.0, 8.0]);
+        assert_eq!(matrix1.transpose(), matrix2);
+        assert_eq!(matrix1.rows(),matrix2.columns());
     }
 }
